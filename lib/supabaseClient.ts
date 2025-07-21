@@ -1,3 +1,6 @@
+// Connect to the online database
+
+// Remember to run npm install @supabase/supabase-js
 
 import { createClient } from '@supabase/supabase-js'
 
