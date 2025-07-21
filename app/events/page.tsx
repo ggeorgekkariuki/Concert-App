@@ -2,38 +2,58 @@
 import { useState, useEffect } from "react";
 import { fetchEvents } from "@/lib/fetchEvents";
 import { ConcertEvent } from "@/types/Event";
-import { error } from "console";
+import EventCard from "@/components/EventCard/EventCard";
+import SearchBar from "@/components/SearchBar/SearchBar";
 
 export default function EventsPage() {
-  const city = "Amsterdam"
-  const [events, setEvents] = useState<ConcertEvent[]>([]);
-  const [loading, setLoading] = useState(true);
+  // Form information
+  const placeholder = "Search Event By City ...";
 
+  // All Events stored in the database
+  const [events, setEvents] = useState<ConcertEvent[]>([]);
+
+  // Flag to indicate if the data is still Loading
+  const [loading, setLoading] = useState(false);
+
+  // The current query or parameter AKA city
+  //  to be search against in the database
+  const [query, setQuery] = useState("Amsterdam");
+
+  // Load the data once on render
   useEffect(() => {
-    fetchEvents(city)
-      .then((data) => {
-        setEvents(data);
-        setLoading(false);
-      })
-      .catch((error) => console.log(error))
-      .finally(() => setLoading(false));
+    loadEvents(query);
   }, []);
+
+  async function loadEvents(city: string) {
+    setLoading(true);
+    const results = await fetchEvents(query);
+    setEvents(results);
+    setLoading(false);
+  }
 
   return (
     <main className="container">
       <section>
-        {city ? (<h1>Concerts in {city}</h1>) : (<h1>Concerts Across Europe</h1>)}
+        {/* Header */}
+        {query ? <h1>Concerts in {query}</h1> : <h1>Concerts Across Europe</h1>}
         <p>Browse upcoming performances from all genres and cities.</p>
-        {loading ? (<p>Loading</p>) : (
-          events.length === 0 ? (<p>No events in the city of { city }</p>) : (
-            <ul>
-              { events.map((event, id) => (
-                <li key={id}>
-                  <strong>{event.title}</strong> - <strong>{event.date}</strong> by the artist {event.artist}
-                </li>
-              )) }
-            </ul>
-          )
+
+        {/* Search bar */}
+        <h2>Search events by city</h2>
+        <SearchBar
+          query={query}
+          placeholder={placeholder}
+          onSubmit={() => loadEvents(query)}
+          onChange={setQuery}
+        />
+
+        {/* Load Results */}
+        {loading ? (
+          <p>Loading</p>
+        ) : events.length === 0 ? (
+          <p>No events in the city of {query}!</p>
+        ) : (
+          events.map((event) => <EventCard event={event} key={event.id} />)
         )}
       </section>
 
