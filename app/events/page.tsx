@@ -4,6 +4,7 @@ import { fetchEvents } from "@/lib/fetchEvents";
 import { ConcertEvent } from "@/types/Event";
 import EventCard from "@/components/EventCard/EventCard";
 import SearchBar from "@/components/SearchBar/SearchBar";
+import GenreFilter from "@/components/Genres/GenreFilter";
 
 export default function EventsPage() {
   // Form information
@@ -19,6 +20,9 @@ export default function EventsPage() {
   //  to be search against in the database
   const [query, setQuery] = useState("Amsterdam");
 
+  // Flag displaying genres chosen
+  const [genre, setGenre] = useState('')
+
   // Load the data once on render
   useEffect(() => {
     loadEvents(query);
@@ -28,7 +32,9 @@ export default function EventsPage() {
     try {
       setLoading(true);
       const result = await fetchEvents(city);
-      setEvents(result);
+      // Filter for genre
+      const filteredData = genre ? result.filter((record) => record.genre === genre) : result
+      setEvents(filteredData);
     } catch (error) {
       console.error("Events fetch failed:", error);
     } finally {
@@ -65,6 +71,7 @@ export default function EventsPage() {
       <section>
         <h2>Genres to Explore</h2>
         <p>Electronic, Jazz, Rock, Indie, Classical, Folk…</p>
+        <GenreFilter genre={genre} onChange={setGenre} />
       </section>
 
       <section>
