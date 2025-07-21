@@ -1,0 +1,36 @@
+.form {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .input {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border-radius: 8px;
+    border: 1px solid #444;
+    background-color: #222;
+    color: #eee;
+    width: 250px;
+  }
+  
+  .input::placeholder {
+    color: #888;
+  }
+  
+  .button {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border-radius: 8px;
+    background-color: #00ffe0;
+    color: #111;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+  }
+  
+  .button:hover {
+    background-color: #00ddc0;
+  }
+  
