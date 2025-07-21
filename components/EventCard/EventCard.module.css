@@ -1,0 +1,37 @@
+.card {
+    background-color: #222;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s ease;
+  }
+  
+  .card:hover {
+    transform: scale(1.02);
+    background-color: #2a2a2a;
+  }
+  
+  .title {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+    color: #00ffe0;
+  }
+  
+  .details {
+    margin: 0.2rem 0;
+    font-weight: 500;
+    color: #ccc;
+  }
+  
+  .venue {
+    margin: 0.2rem 0;
+    color: #aaa;
+  }
+  
+  .genre {
+    margin-top: 0.5rem;
+    font-style: italic;
+    color: #888;
+  }
+  
