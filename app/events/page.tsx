@@ -25,10 +25,15 @@ export default function EventsPage() {
   }, []);
 
   async function loadEvents(city: string) {
-    setLoading(true);
-    const results = await fetchEvents(query);
-    setEvents(results);
-    setLoading(false);
+    try {
+      setLoading(true);
+      const result = await fetchEvents(city);
+      setEvents(result);
+    } catch (error) {
+      console.error("Events fetch failed:", error);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
