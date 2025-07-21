@@ -1,9 +1,15 @@
-import Image from "next/image";
-
-export default function Home() {
+export default function HomePage() {
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      Is it on
-    </div>
+    <main className="container">
+      <section>
+        <h1>Welcome to European Soundscapes</h1>
+        <p>Your portal to the pulse of live music across Europe.</p>
+      </section>
+
+      <section>
+        <h2>Start Exploring</h2>
+        <p>Check out <a href="/events">Events</a>, dive into <a href="/artists">Artists</a>, or read our <a href="/about">story</a>.</p>
+      </section>
+    </main>
   );
 }
