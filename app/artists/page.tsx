@@ -4,6 +4,7 @@ import SearchBar from "@/components/SearchBar/SearchBar";
 import { ConcertEvent } from "@/types/Event";
 import { fetchArtistEvents } from "@/lib/fetchArtist";
 import EventCard from "@/components/EventCard/EventCard";
+import ArtistCard from "@/components/Artists/ArtistCard";
 
 export default function ArtistsPage() {
   const placeholder = "Search Events by Artist ...";
@@ -53,6 +54,13 @@ export default function ArtistsPage() {
           onSubmit={() => loadEvents(artistQuery)}
         />
 
+        {artistQuery && (
+          <>
+            <h3>More about the artist</h3>
+            <ArtistCard name={artistQuery} genre="Rhumba" country="Jamaica" />
+          </>
+        )}
+
         {/* Load the data */}
         {loading ? (
           <p>Loading the events</p>
@@ -61,9 +69,12 @@ export default function ArtistsPage() {
             Sorry, there are no events for the artist {artistQuery} currently!
           </p>
         ) : (
-          events.map((event) => (
-            <EventCard event={event} key={event.id}/>
-          ))
+          <>
+            <h3>Events happening featuring {artistQuery} </h3>
+            {events.map((event) => (
+              <EventCard event={event} key={event.id} />
+            ))}{" "}
+          </>
         )}
       </section>
     </main>
