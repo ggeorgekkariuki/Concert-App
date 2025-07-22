@@ -1,13 +1,12 @@
 import supabase from "./supabaseClient";
 import { ConcertEvent } from "@/types/Event";
 
-
-export async function fetchEvents(city?: string) {
+export async function fetchArtistEvents(artist?: string):Promise<ConcertEvent[]> {
 
     let query = supabase.from('events').select('*')
 
-    if (city) {
-        query = query.ilike('city', `%${city}%`)
+    if (artist) {
+        query = query.eq('artist', artist)
     }
     
     const {data, error} = await query;
