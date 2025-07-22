@@ -17,5 +17,5 @@ export async function fetchArtistEvents(artist?: string):Promise<ConcertEvent[]>
     }
 
     return data || []
-
+    
 }

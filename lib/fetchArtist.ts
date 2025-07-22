@@ -1,6 +1,4 @@
 import supabase from "./supabaseClient";
-import { Artist } from "@/types/Artist";
-
 
 export async function fetchArtist(artist: string) {
     
