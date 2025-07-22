@@ -39,15 +39,22 @@ export default function ArtistsPage() {
     loadArtistsByGenre(genre);
   }, []);
 
-  // Update GenreFilter with the genre of the selected band
-  useEffect(() => {if (artistData) {setGenre(artistData.genre)}}, [artistData])
+  // Update GenreFilter value with the genre of the selected band
+  useEffect(() => {
+    if (artistData) {
+      setGenre(artistData.genre);
+    }
+  }, [artistData]);
+
+  // Is an Artist in your favorites?
+  const [favorites, setFavorites] = useState<Artist[]>([]);
 
   // Load the Artists [] in the selected Genre
   async function loadArtistsByGenre(genre: string) {
     try {
       setLoadingGenre(true);
       const allResults = await fetchArtistsByGenre(genre);
-      const topFive = allResults.slice(0, 5) // Top 5 only
+      const topFive = allResults.slice(0, 5); // Top 5 only
       setArtistInThisGenre(topFive);
     } catch (error) {
       console.error("The error from Load Artists in 'this' Genre: ", error);
@@ -78,6 +85,18 @@ export default function ArtistsPage() {
     setLoading(false);
   }
 
+  // Function handling adding or removing Artist:Artist from favorites : Artist [] list
+  function toggleFavorite(artist: Artist) {
+    // Does this artist's ID exist in the current favorited Artists
+    if (favorites.some((fav) => fav.id === artist.id)) {
+      // Then remove this Artist's ID
+      setFavorites(favorites.filter((fav) => fav.id !== artist.id));
+    } else {
+      // Else add this artist object to our favorites object
+      setFavorites([...favorites, artist]);
+    }
+  }
+
   return (
     <main className="container">
       <section>
@@ -102,7 +121,13 @@ export default function ArtistsPage() {
         ) : artistQuery && artistData ? (
           <div>
             <h3>Who is {artistQuery}?</h3>
-            <ArtistCard artist={artistData} />
+            <ArtistCard
+              artist={artistData}
+              onFavorite={toggleFavorite}
+              isFavorited={favorites.some(
+                (record) => record.id === artistData.id
+              )}
+            />
           </div>
         ) : (
           <p>No artist found for "{artistQuery}".</p>
@@ -117,7 +142,11 @@ export default function ArtistsPage() {
           <div>
             <h3>Other bands in the {genre} genre.</h3>
             {artistInThisGenre.map((artist) => (
-              <ArtistCard key={artist.id} artist={artist} />
+              <ArtistCard key={artist.id} artist={artist} 
+              onFavorite={toggleFavorite}
+              isFavorited={favorites.some(
+                (record) => record.id === artist.id
+              )}/>
             ))}
           </div>
         )}
