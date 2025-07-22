@@ -27,3 +27,19 @@
   margin-top: 0.5rem;
   color: #ccc;
 }
+
+.favoriteButton {
+  margin-top: 1rem;
+  padding: 0.4rem 1rem;
+  background-color: #00ffe0;
+  color: #000;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.favoriteButton:hover {
+  background-color: #00d4bb;
+}
