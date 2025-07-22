@@ -1,17 +1,17 @@
+import { Artist } from "@/types/Artist";
 import styles from "./ArtistCard.module.css";
 
 type ArtistProps = {
-  name: string;
-  country?: string;
-  genre: string;
+  artist: Artist;
 };
 
-export default function ArtistCard({ name, country, genre }: ArtistProps) {
-  return (
-    <div className={styles.card}>
-      <h2 className={styles.name}>{name}</h2>
-      <p className={styles.genre}>{genre}</p>
-      {country && <p className={styles.country}>From {country}</p>}
-    </div>
+export default function ArtistCard({ artist }: ArtistProps) {
+    return (
+      <div className={styles.card}>
+        <h2 className={styles.name}>{artist.name}</h2>
+        <p className={styles.genre}>{artist.genre}</p>
+        {artist.country && <p className={styles.country}>From {artist.country}</p>}
+        {artist.bio && <p className={styles.bio}>{artist.bio}</p>}
+      </div>
   );
 }

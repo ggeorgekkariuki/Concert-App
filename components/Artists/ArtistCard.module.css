@@ -1,25 +1,29 @@
 .card {
-    background-color: #1f1f1f;
-    padding: 1.5rem;
-    border-radius: 12px;
-    margin-bottom: 1.5rem;
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
-  }
-  
-  .name {
-    font-size: 1.3rem;
-    color: #00ffe0;
-    margin-bottom: 0.5rem;
-  }
-  
-  .genre {
-    font-style: italic;
-    color: #aaa;
-  }
-  
-  .country {
-    margin-top: 0.5rem;
-    font-size: 0.95rem;
-    color: #888;
-  }
-  
+  background-color: #1f1f1f;
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+}
+
+.name {
+  font-size: 1.3rem;
+  color: #00ffe0;
+  margin-bottom: 0.5rem;
+}
+
+.genre {
+  font-style: italic;
+  color: #aaa;
+}
+
+.country {
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+  color: #888;
+}
+
+.bio {
+  margin-top: 0.5rem;
+  color: #ccc;
+}
