@@ -1,80 +1,91 @@
 "use client";
 import { useState, useEffect } from "react";
-import SearchBar from "@/components/SearchBar/SearchBar";
-import { ConcertEvent } from "@/types/Event";
-import { fetchArtistEvents } from "@/lib/fetchArtist";
-import EventCard from "@/components/EventCard/EventCard";
+import { fetchArtist } from "@/lib/fetchArtist";
 import ArtistCard from "@/components/Artists/ArtistCard";
+import SearchBar from "@/components/SearchBar/SearchBar";
+import { Artist } from "@/types/Artist";
+import { ConcertEvent } from "@/types/Event";
+import EventCard from "@/components/EventCard/EventCard";
+import { fetchArtistEvents } from "@/lib/fetchArtistEvents";
 
 export default function ArtistsPage() {
-  const placeholder = "Search Events by Artist ...";
-
-  // Current artist in the form
+  // Loading states for Events and Artists
+  const [loadingEvent, setLoadingEvent] = useState(false);
+  const [loading, setLoading] = useState(false);
+  // This is the name of the artist
   const [artistQuery, setArtistQuery] = useState("Echo Pulse");
-
-  // Current Events with the artist
+  // This is the information about the artist
+  const [artistData, setArtistData] = useState<Artist>();
+  // All Events FOR THIS artist stored in the database
   const [events, setEvents] = useState<ConcertEvent[]>([]);
 
-  // Loading toggles
-  const [loading, setLoading] = useState(false);
-
-  // Load events for the artists
+  // Effect that runs when the page renders
   useEffect(() => {
+    loadArtist(artistQuery);
     loadEvents(artistQuery);
   }, []);
 
-  // Source from the database
+  // Events from the Artist
   async function loadEvents(artist: string) {
     try {
-      setLoading(true);
+      setLoadingEvent(true);
       const result = await fetchArtistEvents(artist);
       setEvents(result);
     } catch (error) {
-      console.error("Artist fetch failed:", error);
+      console.error("Events fetch failed:", error);
     } finally {
       setLoading(false);
     }
   }
 
+  // The artist information
+  async function loadArtist(name: string) {
+    setLoading(true);
+    const artist = await fetchArtist(name);
+    console.log(artist);
+    setArtistData(artist[0]);
+    setLoading(false);
+  }
+
   return (
     <main className="container">
       <section>
-        <h1>Featured Artists</h1>
-        <p>
-          From rising stars to seasoned legends—meet the musicians moving
-          Europe.
-        </p>
-
-        {/* Search Bar */}
-        <h2>Search for your artist</h2>
+        <h1>Artist Spotlight</h1>
         <SearchBar
-          placeholder={placeholder}
           query={artistQuery}
           onChange={setArtistQuery}
-          onSubmit={() => loadEvents(artistQuery)}
+          onSubmit={() => {
+            loadArtist(artistQuery);
+            loadEvents(artistQuery);
+          }}
+          placeholder="Search by artist name..."
         />
+      </section>
 
-        {artistQuery && (
-          <>
-            <h3>More about the artist</h3>
-            <ArtistCard name={artistQuery} genre="Rhumba" country="Jamaica" />
-          </>
+      <section>
+        {loading ? (
+          <p>Loading artist...</p>
+        ) : artistData ? (
+          <div>
+            <h3>Who is {artistQuery}?</h3>
+            <ArtistCard artist={artistData} />
+          </div>
+        ) : (
+          <p>No artist found for "{artistQuery}".</p>
         )}
 
-        {/* Load the data */}
-        {loading ? (
-          <p>Loading the events</p>
+        {/* Load Artist Events Results */}
+        {loadingEvent ? (
+          <p>Loading</p>
         ) : events.length === 0 ? (
-          <p>
-            Sorry, there are no events for the artist {artistQuery} currently!
-          </p>
+          <p>No events in the city of {artistQuery}!</p>
         ) : (
-          <>
-            <h3>Events happening featuring {artistQuery} </h3>
+          <div>
+            <h3>Events from {artistQuery}</h3>
             {events.map((event) => (
               <EventCard event={event} key={event.id} />
-            ))}{" "}
-          </>
+            ))}
+          </div>
         )}
       </section>
     </main>
