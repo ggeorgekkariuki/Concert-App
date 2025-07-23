@@ -1,11 +1,3 @@
-.card {
-  background-color: #1f1f1f;
-  padding: 1.5rem;
-  border-radius: 12px;
-  margin-bottom: 1.5rem;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
-}
-
 .name {
   font-size: 1.3rem;
   color: #00ffe0;
@@ -42,4 +34,17 @@
 
 .favoriteButton:hover {
   background-color: #00d4bb;
+}
+
+.card {
+  background-color: #1e1e1e;
+  border-radius: 12px;
+  padding: 1.2rem;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: 0 0 4px rgba(0, 255, 224, 0.05);
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 20px rgba(0, 255, 224, 0.15);
 }
