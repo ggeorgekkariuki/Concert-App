@@ -1,0 +1,15 @@
+.filterSection {
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+  
+  .gridSection {
+    padding: 1rem 0;
+  }
+  
+  .grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+  
