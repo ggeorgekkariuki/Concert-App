@@ -1,15 +1,38 @@
+"use client";
+import ArtistCard from "@/components/Artists/ArtistCard";
+import { Artist } from "@/types/Artist";
+import { useEffect, useState } from "react";
+
 export default function FavoritesPage() {
-    return (
-      <main className="container">
-        <section>
-          <h1>Your Saved Concerts</h1>
-          <p>Mark events you love and revisit them anytime.</p>
-        </section>
-  
-        <section>
-          <h2>Personalized Music Journey</h2>
-          <p>Curate your own setlist of upcoming live shows.</p>
-        </section>
-      </main>
-    );
-  }
+  // Your favorite artists stored in state
+  const [favorites, setFavorites] = useState<Artist[]>([]);
+
+  // Read from the localStorage
+  useEffect(() => {
+    const storedFavorites = localStorage.getItem("favoriteArtists");
+
+    if (storedFavorites) {
+      try {
+        setFavorites(JSON.parse(storedFavorites));
+      } catch (error) {
+        console.log(
+          "Failed to fetch the favoriteArtists from localStorage",
+          error
+        );
+      }
+    }
+  }, []);
+
+  return (
+    <main className="container">
+      <section>
+        <h1>Your Favorite Artists</h1>
+        {favorites.length === 0 ? (
+          <p>No favorites here yet!</p>
+        ) : (
+          favorites.map((artist) => <ArtistCard artist={artist} key={artist.id}/>)
+        )}
+      </section>
+    </main>
+  );
+}
