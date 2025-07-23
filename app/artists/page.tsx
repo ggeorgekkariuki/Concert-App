@@ -45,9 +45,6 @@ export default function ArtistsPage() {
     }
   }, [genre]);
 
-  // Is an Artist in your favorites?
-  const [favorites, setFavorites] = useState<Artist[]>([]);
-
   // Load the Artists [] in the selected Genre
   async function loadArtistsByGenre(genre: string) {
     try {
@@ -84,16 +81,42 @@ export default function ArtistsPage() {
     setLoading(false);
   }
 
+  /**Favorites Logi */
+  // Is an Artist in your favorites?
+  const [favorites, setFavorites] = useState<Artist[]>([]);
+  // Fetching favorites if they exist from localStorage when the page renders
+  useEffect(() => {
+    const storedFavorites = localStorage.getItem("favoriteArtists");
+
+    if (storedFavorites) {
+      try {
+        const parsed = JSON.parse(storedFavorites) as Artist[];
+        setFavorites(parsed);
+      } catch (error) {
+        console.log("Failed to fetch from local storage", error);
+      }
+    }
+  }, []);
+
   // Function handling adding or removing Artist:Artist from favorites : Artist [] list
+  // Also add favorited Artist:Artist into localStorage
   function toggleFavorite(artist: Artist) {
+    let updatedFavorites: Artist[]; // An empty array to hold favorited Artist objects
+
     // Does this artist's ID exist in the current favorited Artists
     if (favorites.some((fav) => fav.id === artist.id)) {
       // Then remove this Artist's ID
-      setFavorites(favorites.filter((fav) => fav.id !== artist.id));
+      updatedFavorites = favorites.filter((fav) => fav.id !== artist.id);
     } else {
       // Else add this artist object to our favorites object
-      setFavorites([...favorites, artist]);
+      updatedFavorites = [...favorites, artist];
     }
+
+    // Update the favorites state
+    setFavorites(updatedFavorites);
+
+    // Update localstorage with the new data
+    localStorage.setItem("favoriteArtists", JSON.stringify(updatedFavorites))
   }
 
   return (
