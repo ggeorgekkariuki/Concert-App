@@ -34,17 +34,16 @@ export default function ArtistsPage() {
     loadEvents(artistQuery);
   }, []);
 
-  // Load the Other Artists In this Genre function
+  // Load the Other Artists In this Genre function if genre changes
   useEffect(() => {
-    loadArtistsByGenre(genre);
-  }, []);
-
-  // Update GenreFilter value with the genre of the selected band
-  useEffect(() => {
-    if (artistData) {
-      setGenre(artistData.genre);
+    if (genre) {
+      // Loads the new Artists with this genre
+      loadArtistsByGenre(genre);
+    } else {
+      // Rerender all the artists with all genres
+      loadArtistsByGenre(genre);
     }
-  }, [artistData]);
+  }, [genre]);
 
   // Is an Artist in your favorites?
   const [favorites, setFavorites] = useState<Artist[]>([]);
@@ -99,8 +98,10 @@ export default function ArtistsPage() {
 
   return (
     <main className="container">
+      <h1>Artist Spotlight</h1>
+
+      {/* Search bar */}
       <section>
-        <h1>Artist Spotlight</h1>
         <SearchBar
           query={artistQuery}
           onChange={setArtistQuery}
@@ -111,11 +112,10 @@ export default function ArtistsPage() {
           }}
           placeholder="Search by artist name..."
         />
-        <GenreFilter genre={genre} onChange={setGenre} />
       </section>
 
+      {/* Load Artist Bio */}
       <section>
-        {/* Load Artist Bio */}
         {loading ? (
           <p>Loading artist...</p>
         ) : artistQuery && artistData ? (
@@ -132,26 +132,40 @@ export default function ArtistsPage() {
         ) : (
           <p>No artist found for "{artistQuery}".</p>
         )}
+      </section>
 
-        {/* Load all Artists who have 'this' genre */}
+      {/* Load all Artists who have 'this' genre */}
+      <section>
+        <h3>Genre Discovery</h3>
+        <GenreFilter genre={genre} onChange={setGenre} />
         {loadingGenre ? (
           <p>Loading artists...</p>
         ) : artistInThisGenre.length === 0 ? (
           <p>No artists found for genre "{genre}".</p>
         ) : (
           <div>
-            <h3>Other bands in the {genre} genre.</h3>
+            <h3>
+              {" "}
+              {genre
+                ? `More ${genre} artists you might enjoy:`
+                : "More artists you might enjoy"}
+            </h3>
             {artistInThisGenre.map((artist) => (
-              <ArtistCard key={artist.id} artist={artist} 
-              onFavorite={toggleFavorite}
-              isFavorited={favorites.some(
-                (record) => record.id === artist.id
-              )}/>
+              <ArtistCard
+                key={artist.id}
+                artist={artist}
+                onFavorite={toggleFavorite}
+                isFavorited={favorites.some(
+                  (record) => record.id === artist.id
+                )}
+              />
             ))}
           </div>
         )}
+      </section>
 
-        {/* Load Artist Events Results */}
+      {/* Load Artist Events Results */}
+      <section>
         {loadingEvent ? (
           <p>Loading...</p>
         ) : events.length === 0 ? (
