@@ -75,7 +75,9 @@ export default function ArtistDirectoryPage() {
         ) : (
           <div className={styles.grid}>
             {artists.map((artist) => (
+              <div key={artist.id} className={styles.cardWrapper}>
               <ArtistCard key={artist.id} artist={artist} />
+              </div>
             ))}
           </div>
         )}
