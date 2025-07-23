@@ -5,6 +5,7 @@ import { ConcertEvent } from "@/types/Event";
 import EventCard from "@/components/EventCard/EventCard";
 import SearchBar from "@/components/SearchBar/SearchBar";
 import GenreFilter from "@/components/Genres/GenreFilter";
+import EventModal from "@/components/Modal/EventModal";
 
 export default function EventsPage() {
   // Form information
@@ -21,7 +22,7 @@ export default function EventsPage() {
   const [query, setQuery] = useState("Amsterdam");
 
   // Flag displaying genres chosen
-  const [genre, setGenre] = useState('')
+  const [genre, setGenre] = useState("");
 
   // Load the data once on render
   useEffect(() => {
@@ -33,13 +34,27 @@ export default function EventsPage() {
       setLoading(true);
       const result = await fetchEvents(city);
       // Filter for genre
-      const filteredData = genre ? result.filter((record) => record.genre === genre) : result
+      const filteredData = genre
+        ? result.filter((record) => record.genre === genre)
+        : result;
       setEvents(filteredData);
     } catch (error) {
       console.error("Events fetch failed:", error);
     } finally {
       setLoading(false);
     }
+  }
+
+  // Indicator if an event has been selected to display a modal
+  const [selectedEvent, setSelectedEvent] = useState<ConcertEvent | null>(null);
+
+  // Handling opening the modal
+  function handleOpenModal(event: ConcertEvent) {
+    setSelectedEvent(event);
+  }
+  // Handling closing the modal
+  function handleCloseModal() {
+    setSelectedEvent(null);
   }
 
   return (
@@ -58,13 +73,20 @@ export default function EventsPage() {
           onChange={setQuery}
         />
 
-        {/* Load Results */}
+        {/* Load Results and Modal */}
         {loading ? (
           <p>Loading</p>
         ) : events.length === 0 ? (
           <p>No events in the city of {query}!</p>
         ) : (
-          events.map((event) => <EventCard event={event} key={event.id} />)
+          events.map((event) => (
+            <div key={event.id} onClick={() => handleOpenModal(event)}>
+              {selectedEvent && (
+                <EventModal event={event} onClose={handleCloseModal} />
+              )}
+              <EventCard event={event} />
+            </div>
+          ))
         )}
       </section>
 
