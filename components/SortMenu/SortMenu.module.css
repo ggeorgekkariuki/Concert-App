@@ -1,0 +1,19 @@
+.wrapper {
+    display: inline-block;
+    margin-left: 1rem;
+  }
+  
+  .label {
+    margin-right: 0.4rem;
+    font-weight: bold;
+    color: #ccc;
+  }
+  
+  .select {
+    background-color: #222;
+    color: #eee;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    border: 1px solid #555;
+  }
+  
