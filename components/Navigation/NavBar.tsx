@@ -23,13 +23,6 @@ export default function NavBar() {
       </Link>{" "}
       |{" "}
       <Link
-        href={"/artists"}
-        className={pathName === "/artists" ? styles.activeLink : styles.link}
-      >
-        Artists
-      </Link>{" "}
-      |{" "}
-      <Link
         href={"/artists/directory"}
         className={
           pathName === "/artists/directory" ? styles.activeLink : styles.link
