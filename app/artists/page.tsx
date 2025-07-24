@@ -30,8 +30,8 @@ export default function ArtistsPage() {
 
   // Effect that runs when the page renders
   useEffect(() => {
-    loadArtist(artistQuery);
     loadEvents(artistQuery);
+    matchedArtistsGotten(artistQuery);
   }, []);
 
   // Load the Other Artists In this Genre function if genre changes
@@ -72,15 +72,6 @@ export default function ArtistsPage() {
     }
   }
 
-  // The artist information
-  async function loadArtist(name: string) {
-    setLoading(true);
-    const artist = await fetchArtist(name);
-    console.log(artist);
-    setArtistData(artist[0]);
-    setLoading(false);
-  }
-
   /**Favorites Logi */
   // Is an Artist in your favorites?
   const [favorites, setFavorites] = useState<Artist[]>([]);
@@ -116,7 +107,30 @@ export default function ArtistsPage() {
     setFavorites(updatedFavorites);
 
     // Update localstorage with the new data
-    localStorage.setItem("favoriteArtists", JSON.stringify(updatedFavorites))
+    localStorage.setItem("favoriteArtists", JSON.stringify(updatedFavorites));
+  }
+
+  /**  Toggle Search onSubmit - to load fuzzy matched artists */
+  // State for finding matched artists
+  const [matchedArtists, setMatchedArtists] = useState<Artist[]>([]);
+  const [loadingMatchedArtists, setLoadingMatchedArtists] = useState(false);
+
+  // Handle the search of the search
+  async function handleSearchOnSubmit() {
+    setLoadingMatchedArtists(true);
+    const matchedArtistsResults = await fetchArtist(artistQuery);
+    console.log("How many objects were fuzzy matched", matchedArtists.length);
+    setMatchedArtists(matchedArtistsResults);
+    setLoadingMatchedArtists(false);
+  }
+
+  // Handles fuzzy matching 
+  async function matchedArtistsGotten(name: string) {
+    setLoadingMatchedArtists(true);
+    const matchedArtistsResults = await fetchArtist(name);
+    console.log("How many objects were fuzzy matched", matchedArtists.length);
+    setMatchedArtists(matchedArtistsResults);
+    setLoadingMatchedArtists(false);
   }
 
   return (
@@ -129,32 +143,30 @@ export default function ArtistsPage() {
           query={artistQuery}
           onChange={setArtistQuery}
           onSubmit={() => {
-            loadArtist(artistQuery);
             loadEvents(artistQuery);
             loadArtistsByGenre(genre);
+            handleSearchOnSubmit();
           }}
           placeholder="Search by artist name..."
         />
       </section>
 
-      {/* Load Artist Bio */}
+      {/* Matched Artists who were fuzzy matched */}
       <section>
-        {loading ? (
-          <p>Loading artist...</p>
-        ) : artistQuery && artistData ? (
-          <div>
-            <h3>Who is {artistQuery}?</h3>
+      {loadingMatchedArtists ? (<p>Still loading</p>) : 
+      matchedArtists.length > 0 ? (
+        <div>
+          <h3>🔍 Matching Artists</h3>
+          {matchedArtists.map((artist) => (
             <ArtistCard
-              artist={artistData}
+              key={artist.id}
+              artist={artist}
               onFavorite={toggleFavorite}
-              isFavorited={favorites.some(
-                (record) => record.id === artistData.id
-              )}
+              isFavorited={favorites.some((fav) => fav.id === artist.id)}
             />
-          </div>
-        ) : (
-          <p>No artist found for "{artistQuery}".</p>
-        )}
+          ))}
+        </div>
+      ): (<p>No matches with the prompt provided!</p>)}
       </section>
 
       {/* Load all Artists who have 'this' genre */}

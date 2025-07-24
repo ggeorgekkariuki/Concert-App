@@ -5,7 +5,7 @@ export async function fetchArtist(artist: string) {
     let query = supabase.from('artists').select('*')
 
     if (artist) {
-        query = query.eq('name', artist)
+        query = query.ilike('name', `%${artist}%`)
     }
     
     const {data, error} = await query;
