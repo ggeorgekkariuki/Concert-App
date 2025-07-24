@@ -1,5 +1,6 @@
 import { Artist } from "@/types/Artist";
 import styles from "./ArtistCard.module.css";
+import Link from "next/link";
 
 type ArtistProps = {
   artist: Artist;
@@ -13,6 +14,7 @@ export default function ArtistCard({
   isFavorited,
 }: ArtistProps) {
   return (
+    <Link href={`/artists/${artist.id}`}>
     <div className={styles.card}>
       <h2 className={styles.name}>{artist.name}</h2>
       <p className={styles.genre}>{artist.genre}</p>
@@ -30,5 +32,6 @@ export default function ArtistCard({
         </button>
       )}
     </div>
+    </Link>
   );
 }
