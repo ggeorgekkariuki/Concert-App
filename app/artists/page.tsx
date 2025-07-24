@@ -30,8 +30,8 @@ export default function ArtistsPage() {
 
   // Effect that runs when the page renders
   useEffect(() => {
-    loadArtist(artistQuery);
     loadEvents(artistQuery);
+    matchedArtistsGotten(artistQuery);
   }, []);
 
   // Load the Other Artists In this Genre function if genre changes
@@ -70,15 +70,6 @@ export default function ArtistsPage() {
     } finally {
       setLoadingEvent(false);
     }
-  }
-
-  // The artist information
-  async function loadArtist(name: string) {
-    setLoading(true);
-    const artist = await fetchArtist(name);
-    console.log(artist);
-    setArtistData(artist[0]);
-    setLoading(false);
   }
 
   /**Favorites Logi */
@@ -133,6 +124,15 @@ export default function ArtistsPage() {
     setLoadingMatchedArtists(false);
   }
 
+  // Handles fuzzy matching 
+  async function matchedArtistsGotten(name: string) {
+    setLoadingMatchedArtists(true);
+    const matchedArtistsResults = await fetchArtist(name);
+    console.log("How many objects were fuzzy matched", matchedArtists.length);
+    setMatchedArtists(matchedArtistsResults);
+    setLoadingMatchedArtists(false);
+  }
+
   return (
     <main className="container">
       <h1>Artist Spotlight</h1>
@@ -143,7 +143,6 @@ export default function ArtistsPage() {
           query={artistQuery}
           onChange={setArtistQuery}
           onSubmit={() => {
-            loadArtist(artistQuery);
             loadEvents(artistQuery);
             loadArtistsByGenre(genre);
             handleSearchOnSubmit();
@@ -168,27 +167,7 @@ export default function ArtistsPage() {
           ))}
         </div>
       ): (<p>No matches with the prompt provided!</p>)}
-      </section>g
-
-      {/* Load Artist Bio */}
-      {/* <section>
-        {loading ? (
-          <p>Loading artist...</p>
-        ) : artistQuery && artistData ? (
-          <div>
-            <h3>Who is {artistQuery}?</h3>
-            <ArtistCard
-              artist={artistData}
-              onFavorite={toggleFavorite}
-              isFavorited={favorites.some(
-                (record) => record.id === artistData.id
-              )}
-            />
-          </div>
-        ) : (
-          <p>No artist found for "{artistQuery}".</p>
-        )}
-      </section> */}
+      </section>
 
       {/* Load all Artists who have 'this' genre */}
       <section>
