@@ -6,6 +6,7 @@ import styles from "./Directory.module.css";
 import GenreFilter from "@/components/Genres/GenreFilter";
 import ArtistCard from "@/components/Artists/ArtistCard";
 import SortMenu from "@/components/SortMenu/SortMenu";
+import { error } from "console";
 
 export default function ArtistDirectoryPage() {
   // Maintain the genre state
@@ -15,15 +16,13 @@ export default function ArtistDirectoryPage() {
   // Loading state
   const [loading, setLoading] = useState(false);
   // Keep track of the sort key as either name or country
-  const [sortKey, setSortKey] = useState <"name"|"country">("name");
+  const [sortKey, setSortKey] = useState<"name" | "country">("name");
 
   // A typed accessor to efficiently sort the returned artist array because
   // Typescript rejected [...results].sort((a, b) => a[sortKey].localCompare ...)
   const getSortableValue = (artist: Artist, key: "name" | "country") => {
     return artist[key] || "";
   };
-
-  console.log(artists);
 
   // Rerun if  the genre component changes
   // Rerun if the sort key changes
@@ -35,9 +34,7 @@ export default function ArtistDirectoryPage() {
     setLoading(true);
     const results = await fetchArtistsByGenre(genre);
     const sortedResults = [...results].sort((a, b) =>
-      getSortableValue(a, sortKey ).localeCompare(
-        getSortableValue(b, sortKey)
-      )
+      getSortableValue(a, sortKey).localeCompare(getSortableValue(b, sortKey))
     );
     setArtists(sortedResults);
     setLoading(false);
@@ -52,6 +49,43 @@ export default function ArtistDirectoryPage() {
 
   function handleSortKeyChange(sortKey: string) {
     setSortKey(sortKey as "name" | "country");
+  }
+
+  /** Favoriting Logic */
+  // The favorite holds artists:Artist[] in state
+  const [favorites, setFavorites] = useState<Artist[]>([]);
+
+  // Find favorites in localStorage once on render
+  useEffect(() => {
+    const storedFavoritedArtists = localStorage.getItem("favoritedArtists");
+
+    if (storedFavoritedArtists) {
+      try {
+        // If this string exists, give me back the Object or Arrays
+        const results = JSON.parse(storedFavoritedArtists) as Artist[];
+        setFavorites(results)
+        // 
+      } catch (error) {
+        console.log("Failed to fetch error from localstorage ", error);
+      }
+    }
+  }, []);
+
+  // Toggle the favorites button when clicked
+  function handleToggleFavoritesButton(artist: Artist) {
+    let updatedFavorites : Artist[]
+    // Does this artist exist in the favorites:Artist[] object
+    if (favorites.some((record) => record.id === artist.id)) {
+      updatedFavorites = favorites.filter((record) => record.id !== artist.id)
+    } else {
+      updatedFavorites = [...favorites, artist]
+    }
+
+    // Finally update the state with the new favorites list
+    setFavorites(updatedFavorites)
+
+    // Update the local storage
+    localStorage.setItem("favoritedArtists", JSON.stringify(updatedFavorites))
   }
 
   return (
@@ -76,7 +110,7 @@ export default function ArtistDirectoryPage() {
           <div className={styles.grid}>
             {artists.map((artist) => (
               <div key={artist.id} className={styles.cardWrapper}>
-              <ArtistCard key={artist.id} artist={artist} />
+                <ArtistCard artist={artist} onFavorite={handleToggleFavoritesButton} isFavorited={favorites.some((record) => record.id === artist.id)} />
               </div>
             ))}
           </div>
