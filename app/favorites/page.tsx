@@ -9,7 +9,7 @@ export default function FavoritesPage() {
 
   // Read from the localStorage
   useEffect(() => {
-    const storedFavorites = localStorage.getItem("favoriteArtists");
+    const storedFavorites = localStorage.getItem("favoritedArtists");
 
     if (storedFavorites) {
       try {
