@@ -116,7 +116,21 @@ export default function ArtistsPage() {
     setFavorites(updatedFavorites);
 
     // Update localstorage with the new data
-    localStorage.setItem("favoriteArtists", JSON.stringify(updatedFavorites))
+    localStorage.setItem("favoriteArtists", JSON.stringify(updatedFavorites));
+  }
+
+  /**  Toggle Search onSubmit - to load fuzzy matched artists */
+  // State for finding matched artists
+  const [matchedArtists, setMatchedArtists] = useState<Artist[]>([]);
+  const [loadingMatchedArtists, setLoadingMatchedArtists] = useState(false);
+
+  // Handle the search of the search
+  async function handleSearchOnSubmit() {
+    setLoadingMatchedArtists(true);
+    const matchedArtistsResults = await fetchArtist(artistQuery);
+    console.log("How many objects were fuzzy matched", matchedArtists.length);
+    setMatchedArtists(matchedArtistsResults);
+    setLoadingMatchedArtists(false);
   }
 
   return (
@@ -132,13 +146,32 @@ export default function ArtistsPage() {
             loadArtist(artistQuery);
             loadEvents(artistQuery);
             loadArtistsByGenre(genre);
+            handleSearchOnSubmit();
           }}
           placeholder="Search by artist name..."
         />
       </section>
 
-      {/* Load Artist Bio */}
+      {/* Matched Artists who were fuzzy matched */}
       <section>
+      {loadingMatchedArtists ? (<p>Still loading</p>) : 
+      matchedArtists.length > 0 ? (
+        <div>
+          <h3>🔍 Matching Artists</h3>
+          {matchedArtists.map((artist) => (
+            <ArtistCard
+              key={artist.id}
+              artist={artist}
+              onFavorite={toggleFavorite}
+              isFavorited={favorites.some((fav) => fav.id === artist.id)}
+            />
+          ))}
+        </div>
+      ): (<p>No matches with the prompt provided!</p>)}
+      </section>g
+
+      {/* Load Artist Bio */}
+      {/* <section>
         {loading ? (
           <p>Loading artist...</p>
         ) : artistQuery && artistData ? (
@@ -155,7 +188,7 @@ export default function ArtistsPage() {
         ) : (
           <p>No artist found for "{artistQuery}".</p>
         )}
-      </section>
+      </section> */}
 
       {/* Load all Artists who have 'this' genre */}
       <section>
