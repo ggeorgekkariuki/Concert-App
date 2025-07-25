@@ -6,7 +6,8 @@ import styles from "./Directory.module.css";
 import GenreFilter from "@/components/Genres/GenreFilter";
 import ArtistCard from "@/components/Artists/ArtistCard";
 import SortMenu from "@/components/SortMenu/SortMenu";
-import { error } from "console";
+import { fetchArtist } from "@/lib/fetchArtist";
+import SearchBar from "@/components/SearchBar/SearchBar";
 
 export default function ArtistDirectoryPage() {
   // Maintain the genre state
@@ -63,8 +64,8 @@ export default function ArtistDirectoryPage() {
       try {
         // If this string exists, give me back the Object or Arrays
         const results = JSON.parse(storedFavoritedArtists) as Artist[];
-        setFavorites(results)
-        // 
+        setFavorites(results);
+        //
       } catch (error) {
         console.log("Failed to fetch error from localstorage ", error);
       }
@@ -73,19 +74,34 @@ export default function ArtistDirectoryPage() {
 
   // Toggle the favorites button when clicked
   function handleToggleFavoritesButton(artist: Artist) {
-    let updatedFavorites : Artist[]
+    let updatedFavorites: Artist[];
     // Does this artist exist in the favorites:Artist[] object
     if (favorites.some((record) => record.id === artist.id)) {
-      updatedFavorites = favorites.filter((record) => record.id !== artist.id)
+      updatedFavorites = favorites.filter((record) => record.id !== artist.id);
     } else {
-      updatedFavorites = [...favorites, artist]
+      updatedFavorites = [...favorites, artist];
     }
 
     // Finally update the state with the new favorites list
-    setFavorites(updatedFavorites)
+    setFavorites(updatedFavorites);
 
     // Update the local storage
-    localStorage.setItem("favoritedArtists", JSON.stringify(updatedFavorites))
+    localStorage.setItem("favoritedArtists", JSON.stringify(updatedFavorites));
+  }
+
+  /**  Toggle Search onSubmit - to load fuzzy matched artists */
+  // State for finding matched artists
+  const [artistQuery, setArtistQuery] = useState("");
+  const [matchedArtists, setMatchedArtists] = useState<Artist[]>([]);
+  const [loadingMatchedArtists, setLoadingMatchedArtists] = useState(false);
+
+  // Handle the search of the search
+  async function handleSearchOnSubmit() {
+    setLoadingMatchedArtists(true);
+    const matchedArtistsResults = await fetchArtist(artistQuery);
+    console.log("How many objects were fuzzy matched", matchedArtists.length);
+    setMatchedArtists(matchedArtistsResults);
+    setLoadingMatchedArtists(false);
   }
 
   return (
@@ -96,13 +112,59 @@ export default function ArtistDirectoryPage() {
           Browse artists by genre, discover new voices, and favorite your top
           picks.
         </p>
-        <GenreFilter genre={genre} onChange={setGenre} />
-        {/* Sorting here */}
-        <SortMenu sortKey={sortKey} onChange={handleSortKeyChange} />
+
+        <div className={styles.options}>
+          {/* Search bar */}
+          <div className={styles.optionItem}>
+            {" "}
+            <SearchBar
+              query={artistQuery}
+              onChange={setArtistQuery}
+              onSubmit={() => {
+                loadArtists();
+                handleSearchOnSubmit();
+              }}
+              placeholder="Search by artist name..."
+            />
+          </div>
+
+          {/* Genre */}
+          <div className={styles.optionItem}>
+            <GenreFilter genre={genre} onChange={setGenre} />
+          </div>
+
+          {/* Sorting here */}
+          <div className={styles.optionItem}>
+            <SortMenu sortKey={sortKey} onChange={handleSortKeyChange} />
+          </div>
+        </div>
+      </section>
+
+      {/* Matched Artists who were fuzzy matched */}
+      {loadingMatchedArtists && artistQuery !== "" ? 
+        (<section><h1>This only appears</h1></section>) : (null)
+      }
+      <section>
+      {loadingMatchedArtists ? (<p>Still loading</p>) : 
+      matchedArtists.length > 0 ? (
+        <div>
+          <h3>🔍 Matching Artists</h3>
+          {matchedArtists.map((artist) => (
+            <ArtistCard
+              key={artist.id}
+              artist={artist}
+              onFavorite={handleToggleFavoritesButton}
+              isFavorited={favorites.some((fav) => fav.id === artist.id)}
+            />
+          ))}
+        </div>
+      ): (<p>Search for your artists!</p>)}
       </section>
 
       <section className={styles.gridSection}>
-        {loading ? (
+        <h2>All artists</h2>
+        {/* Loading general results */}
+        {artistQuery === "" && loading ? (
           <p>Loading artists...</p>
         ) : artists.length === 0 ? (
           <p>No artists found for genre "{genre}".</p>
@@ -110,7 +172,13 @@ export default function ArtistDirectoryPage() {
           <div className={styles.grid}>
             {artists.map((artist) => (
               <div key={artist.id} className={styles.cardWrapper}>
-                <ArtistCard artist={artist} onFavorite={handleToggleFavoritesButton} isFavorited={favorites.some((record) => record.id === artist.id)} />
+                <ArtistCard
+                  artist={artist}
+                  onFavorite={handleToggleFavoritesButton}
+                  isFavorited={favorites.some(
+                    (record) => record.id === artist.id
+                  )}
+                />
               </div>
             ))}
           </div>
