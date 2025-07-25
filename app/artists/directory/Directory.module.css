@@ -1,3 +1,11 @@
+.options {
+  display: flex;
+}
+
+.optionItem {
+  padding: 1rem;
+}
+
 .filterSection {
     margin-bottom: 2rem;
     text-align: center;
